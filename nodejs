@@ -1,0 +1,40 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const app = express();
+const PORT = 3000;
+
+let names = []; // This should be replaced with a proper database
+
+app.use(bodyParser.json());
+
+app.get('/names', (req, res) => {
+    res.json(names);
+});
+
+app.post('/names', (req, res) => {
+    const name = req.body.name;
+    if (name && !names.includes(name)) {
+        names.push(name);
+        res.status(201).send('Name added successfully.');
+    } else {
+        res.status(400).send('Invalid or duplicate name.');
+    }
+});
+
+app.delete('/names/:name', (req, res) => {
+    const name = req.params.name;
+    const index = names.indexOf(name);
+    if (index !== -1) {
+        names.splice(index, 1);
+        res.send('Name removed successfully.');
+    } else {
+        res.status(404).send('Name not found.');
+    }
+});
+
+app.use(express.static('public'));
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
